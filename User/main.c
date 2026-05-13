@@ -18,6 +18,7 @@
 #include "debug.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "spi.h"
 
 /* Global define */
 #define TASK1_TASK_PRIO     5
@@ -28,7 +29,7 @@
 /* Global Variable */
 TaskHandle_t Task1Task_Handler;
 TaskHandle_t Task2Task_Handler;
-
+TaskHandle_t Task3Task_Handler;
 
 /*********************************************************************
  * @fn      GPIO_Toggle_INIT
@@ -92,6 +93,25 @@ void task2_task(void *pvParameters)
 }
 
 /*********************************************************************
+ * @fn      task3_task
+ *
+ * @brief   task3 program.
+ *
+ * @param  *pvParameters - Parameters point of task3
+ *
+ * @return  none
+ */
+void task3_task(void *pvParameters)
+{
+    while(1)
+    {
+        printf("task3 entry\r\n");
+        SPI1_Send();
+        vTaskDelay(500);
+    }
+}
+
+/*********************************************************************
  * @fn      main
  *
  * @brief   Main program.
@@ -112,6 +132,7 @@ int main(void)
 	printf("FreeRTOS Kernel Version:%s\r\n",tskKERNEL_VERSION_NUMBER);
 
 	GPIO_Toggle_INIT();
+    SPI1_Init();
 	/* create two task */
     xTaskCreate((TaskFunction_t )task2_task,
                         (const char*    )"task2",
@@ -126,6 +147,13 @@ int main(void)
                     (void*          )NULL,
                     (UBaseType_t    )TASK1_TASK_PRIO,
                     (TaskHandle_t*  )&Task1Task_Handler);
+
+    xTaskCreate((TaskFunction_t )task3_task,
+                    (const char*    )"task3",
+                    (uint16_t       )TASK1_STK_SIZE,
+                    (void*          )NULL,
+                    (UBaseType_t    )TASK1_TASK_PRIO,
+                    (TaskHandle_t*  )&Task3Task_Handler);
     vTaskStartScheduler();
 
 	while(1)
