@@ -43,10 +43,16 @@ void GPIO_Toggle_INIT(void)
   GPIO_InitTypeDef  GPIO_InitStructure={0};
 
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
   GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+  
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
+  GPIO_Init(GPIOC, &GPIO_InitStructure);
 }
 
 
@@ -65,9 +71,9 @@ void task1_task(void *pvParameters)
     {
         printf("task1 entry\r\n");
         GPIO_SetBits(GPIOA, GPIO_Pin_0);
-        vTaskDelay(250);
+        vTaskDelay(500);
         GPIO_ResetBits(GPIOA, GPIO_Pin_0);
-        vTaskDelay(250);
+        vTaskDelay(500);
     }
 }
 
@@ -85,9 +91,9 @@ void task2_task(void *pvParameters)
     while(1)
     {
         printf("task2 entry\r\n");
-        GPIO_ResetBits(GPIOA, GPIO_Pin_1);
+        GPIO_ResetBits(GPIOC, GPIO_Pin_0);
         vTaskDelay(500);
-        GPIO_SetBits(GPIOA, GPIO_Pin_1);
+        GPIO_SetBits(GPIOC, GPIO_Pin_0);
         vTaskDelay(500);
     }
 }
@@ -101,13 +107,11 @@ void task2_task(void *pvParameters)
  *
  * @return  none
  */
-void task3_task(void *pvParameters)
-{
-    while(1)
-    {
-        printf("task3 entry\r\n");
+void task3_task (void *pvParameters) {
+    while (1) {
+        printf ("task3 entry\r\n");
         SPI1_Send();
-        vTaskDelay(500);
+        vTaskDelay (500);
     }
 }
 
